@@ -1,10 +1,11 @@
 #include <iostream>
 #include <random>
 #include "TrafficLight.h"
+#include <thread>
 
 /* Implementation of class "MessageQueue" */
 
-/* 
+/*
 template <typename T>
 T MessageQueue<T>::receive()
 {
@@ -23,7 +24,7 @@ void MessageQueue<T>::send(T &&msg)
 
 /* Implementation of class "TrafficLight" */
 
-/* 
+
 TrafficLight::TrafficLight()
 {
     _currentPhase = TrafficLightPhase::red;
@@ -53,6 +54,20 @@ void TrafficLight::cycleThroughPhases()
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
+    auto prev = std::chrono::high_resolution_clock::now();
+    while(true) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        auto current = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(current - prev).count();
+        if(duration >= 4000) {
+            if(this->_currentPhase == TrafficLightPhase::red) {
+                this->_currentPhase = TrafficLightPhase::green;
+            } else {
+                this->_currentPhase = TrafficLightPhase::red;
+                //messageQueue.send(std::move(_currentPhase));
+            }
+            prev = current;
+        }
+    }
 }
 
-*/
